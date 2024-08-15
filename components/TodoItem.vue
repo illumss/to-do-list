@@ -7,12 +7,16 @@ const props = defineProps({
 
 const emit = defineEmits(["edit-task"]);
 
-// Local state
 const isEditing = ref(false);
 const editText = ref(props.task.text);
+const editDescription = ref(props.task.description);
+const editDueDate = ref(props.task.dueDate);
+const editPriority = ref(props.task.priority);
 const isOpen = ref(false);
 
-// Computed property to determine priority class for styling
+// Calculate today's date in YYYY-MM-DD format
+const today = new Date().toISOString().split("T")[0];
+
 const priorityClass = computed(() => {
   return {
     "priority-high": props.task.priority === "High",
@@ -21,33 +25,45 @@ const priorityClass = computed(() => {
   };
 });
 
-// Method to start editing mode
 const startEditing = () => {
   isEditing.value = true;
-  editText.value = props.task.text; // Pre-fill with current text
+  editText.value = props.task.text;
+  editDescription.value = props.task.description;
+  editDueDate.value = props.task.dueDate;
+  editPriority.value = props.task.priority;
 };
 
-// Method to submit the edit
+const capitalizeFirstLetter = (string) => {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+};
+
 const submitEdit = () => {
   if (editText.value.trim() !== "") {
-    emit("edit-task", editText.value);
-    isEditing.value = false; // Exit editing mode
+    emit("edit-task", {
+      text: capitalizeFirstLetter(editText.value.trim()),
+      description: capitalizeFirstLetter(editDescription.value.trim()),
+      dueDate: editDueDate.value,
+      priority: editPriority.value,
+    });
+    isEditing.value = false;
   }
 };
 
-// Method to cancel editing
 const cancelEdit = () => {
-  isEditing.value = false; // Exit editing mode without saving
+  isEditing.value = false;
 };
 
-// Method to format due date
 const formatDate = (date) => {
   if (!date) return "No due date";
   const options = { year: "numeric", month: "long", day: "numeric" };
   return new Date(date).toLocaleDateString(undefined, options);
 };
 
-// Method to toggle details visibility
+// Compute the icon name based on the isOpen state
+const toggleIcon = computed(() => {
+  return isOpen.value ? "ep:close-bold" : "ep:arrow-down-bold";
+});
+
 const toggleOpen = () => {
   isOpen.value = !isOpen.value;
 };
@@ -56,64 +72,62 @@ const toggleOpen = () => {
 <template>
   <li class="todo-item">
     <div class="todo-content">
-      <!-- Checkbox to toggle task completion -->
       <input
         type="checkbox"
         :checked="task.completed"
         @change="$emit('toggle-complete', task.id)" />
-      <!-- Task text with toggle functionality -->
       <span :class="{ completed: task.completed }" class="task-name">
         {{ task.text }}
       </span>
-      <Icon @click="toggleOpen" name="ep:arrow-down-bold" class="arrow-icon" />
+      <div>
+        <Icon @click="toggleOpen" :name="toggleIcon" class="arrow-icon" />
+        <!-- Priority indicator is always visible -->
+
+        <Icon
+          :class="['priority-indicator', priorityClass]"
+          @click="toggleOpen"
+          name="material-symbols:circle" />
+      </div>
     </div>
 
-    <!-- Toggleable task details -->
     <div v-if="isOpen" class="task-details">
-      <!-- Display description -->
       <div class="todo-description-container">
         <label>Description:</label>
-        <span class="description-look" :class="todo - description">{{
-          task.description
-        }}</span>
+        <span>{{ task.description || "No description" }}</span>
       </div>
-
-      <!-- Display priority and due date -->
-      <div class="todo-meta">
-        <label>Priority:</label>
-        <span class="todo-priority" :class="priorityClass">
-          {{ task.priority }}
-        </span>
+      <div class="todo-due-date-container">
         <label>Due Date:</label>
-        <span class="todo-date">{{ formatDate(task.dueDate) }}</span>
+        <span>{{ formatDate(task.dueDate) }}</span>
+      </div>
+      <div class="todo-priority-container" :class="priorityClass">
+        <label>Priority:</label>
+        <span>{{ task.priority }}</span>
       </div>
 
-      <!-- Action buttons for editing and deleting tasks -->
-      <div class="todo-actions">
-        <Icon
-          @click="startEditing"
-          class="editButton"
-          name="material-symbols:edit-rounded" />
-        <Icon
-          @click="$emit('delete-task')"
-          class="deleteButton"
-          name="ep:delete-filled" />
-      </div>
+      <button @click="startEditing" class="edit-button">Edit</button>
+      <button @click="$emit('delete-task', task.id)" class="delete-button">
+        Delete
+      </button>
+    </div>
 
-      <!-- Inline editing form -->
-      <div v-if="isEditing" class="edit-form">
-        <input v-model="editText" />
-
-        <Icon
-          @click="submitEdit"
-          class="SaveButton"
-          name="ep:circle-check-filled" />
-
-        <Icon
-          @click="cancelEdit"
-          class="cancelButton"
-          name="ep:circle-close-filled" />
-      </div>
+    <div v-if="isEditing" class="edit-form">
+      <input v-model="editText" placeholder="Edit task" class="edit-input" />
+      <input
+        v-model="editDescription"
+        placeholder="Edit description"
+        class="edit-input" />
+      <input
+        v-model="editDueDate"
+        :min="today"
+        type="date"
+        class="edit-date-input" />
+      <select v-model="editPriority" class="edit-priority-input">
+        <option value="Low">Low</option>
+        <option value="Medium">Medium</option>
+        <option value="High">High</option>
+      </select>
+      <button @click="submitEdit" class="save-button">Save</button>
+      <button @click="cancelEdit" class="cancel-button">Cancel</button>
     </div>
   </li>
 </template>
@@ -203,7 +217,27 @@ const toggleOpen = () => {
   margin-top: 10px;
 }
 
-.todo-actions button {
+.edit-button {
+  padding: 5px 10px;
+  font-size: 14px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.delete-button {
+  margin-left: 5px;
+  padding: 5px 10px;
+  font-size: 14px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  color: red;
+}
+
+.save-button {
   margin-left: 5px;
   padding: 5px 10px;
   font-size: 14px;
@@ -213,38 +247,22 @@ const toggleOpen = () => {
   transition: background-color 0.3s;
 }
 
-.editButton {
-  padding: 5px 10px;
-  font-size: 14px;
-  cursor: pointer;
-  color: #555;
-}
-
-.deleteButton {
+.cancel-button {
   margin-left: 5px;
   padding: 5px 10px;
   font-size: 14px;
+  border: none;
+  border-radius: 4px;
   cursor: pointer;
-  color: #555;
-}
-
-.SaveButton {
-  margin-left: 5px;
-  padding: 5px 10px;
-  font-size: 14px;
-  cursor: pointer;
-  color: green;
-}
-
-.cancelButton {
-  margin-left: 5px;
-  padding: 5px 10px;
-  font-size: 14px;
-  cursor: pointer;
-  color: #555;
+  transition: background-color 0.3s;
+  color: red;
 }
 
 .todo-actions button:hover {
+  background-color: #e0e0e0;
+}
+
+.task-details button:hover {
   background-color: #e0e0e0;
 }
 
@@ -272,5 +290,13 @@ const toggleOpen = () => {
 
 .edit-form button:hover {
   background-color: #e0e0e0;
+}
+
+.priority-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-left: 10px;
 }
 </style>

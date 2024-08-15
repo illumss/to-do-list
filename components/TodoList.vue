@@ -35,55 +35,49 @@ const sortedActiveTasks = computed(() => {
 });
 
 const addTask = (task) => {
-  console.log("Adding task:", task);
   tasks.value.push({ id: Date.now(), ...task });
   saveTasks();
 };
 
 const deleteTask = (taskId) => {
-  console.log("Deleting task with ID:", taskId);
   tasks.value = tasks.value.filter((task) => task.id !== taskId);
   saveTasks();
 };
 
 const editTask = (taskId, newTask) => {
-  console.log("Editing task with ID:", taskId, "New text:", newTask);
   const task = tasks.value.find((task) => task.id === taskId);
   if (task) {
-    task.text = newTask;
+    task.text = newTask.text;
+    task.description = newTask.description;
+    task.dueDate = newTask.dueDate;
+    task.priority = newTask.priority;
     saveTasks();
   }
 };
 
 const toggleComplete = (taskId) => {
-  console.log("Toggling completion for task ID:", taskId);
   const task = tasks.value.find((task) => task.id === taskId);
   if (task) {
     task.completed = !task.completed;
-    console.log("Updated task:", task);
-    saveTasks(); // Save tasks immediately after toggling the completion status
+    saveTasks();
   }
 };
+
 const sortTasks = () => {
-  console.log("Sorting tasks by:", sortOrder.value);
   sortedActiveTasks.value;
 };
 
 const saveTasks = () => {
-  console.log("Saving tasks to localStorage:", tasks.value);
   localStorage.setItem("tasks", JSON.stringify(tasks.value));
-  console.log("Saving tasks to localStorage:", tasks.value);
 };
 
 const loadTasks = () => {
   const savedTasks = JSON.parse(localStorage.getItem("tasks"));
-  console.log("Loading tasks from localStorage:", savedTasks);
   if (savedTasks) {
     tasks.value = savedTasks.map((task) => ({
       ...task,
-      completed: task.completed ?? false, // Ensure completed property is defined
+      completed: task.completed ?? false,
     }));
-    console.log("Tasks after loading:", tasks.value);
   }
 };
 
@@ -96,7 +90,6 @@ onMounted(() => {
   <div>
     <TodoInput @add-task="addTask" />
 
-    <!-- Sort Dropdown -->
     <div class="sort-container">
       <label for="sort">Sort by:</label>
       <select id="sort" v-model="sortOrder" @change="sortTasks">
@@ -107,7 +100,6 @@ onMounted(() => {
       </select>
     </div>
 
-    <!-- Active Tasks Section -->
     <h2>Active Tasks</h2>
     <ul v-if="sortedActiveTasks.length">
       <TodoItem
@@ -120,7 +112,6 @@ onMounted(() => {
     </ul>
     <p v-else>No active tasks</p>
 
-    <!-- Completed Tasks Section -->
     <h2>Completed Tasks</h2>
     <ul v-if="completedTasks.length">
       <TodoItem
