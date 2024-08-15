@@ -17,12 +17,12 @@ import TodoList from "./components/TodoList.vue";
   background-color: #ffffff;
   border-radius: 10px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  text-align: center;
 }
 
 h1 {
   margin-bottom: 20px;
   font-size: 2.5rem;
   color: #333;
+  text-align: center;
 }
 </style>

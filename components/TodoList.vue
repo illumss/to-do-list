@@ -2,7 +2,6 @@
 import { ref, computed, onMounted } from "vue";
 import TodoItem from "~/components/TodoItem.vue";
 import TodoInput from "~/components/TodoInput.vue";
-import TodoItemDetails from "~/components/TodoItemDetails.vue";
 
 const tasks = ref([]);
 const sortOrder = ref("created");
@@ -62,10 +61,9 @@ const toggleComplete = (taskId) => {
   if (task) {
     task.completed = !task.completed;
     console.log("Updated task:", task);
-    saveTasks();
+    saveTasks(); // Save tasks immediately after toggling the completion status
   }
 };
-
 const sortTasks = () => {
   console.log("Sorting tasks by:", sortOrder.value);
   sortedActiveTasks.value;
@@ -74,6 +72,7 @@ const sortTasks = () => {
 const saveTasks = () => {
   console.log("Saving tasks to localStorage:", tasks.value);
   localStorage.setItem("tasks", JSON.stringify(tasks.value));
+  console.log("Saving tasks to localStorage:", tasks.value);
 };
 
 const loadTasks = () => {
@@ -82,7 +81,7 @@ const loadTasks = () => {
   if (savedTasks) {
     tasks.value = savedTasks.map((task) => ({
       ...task,
-      completed: task.completed ?? false,
+      completed: task.completed ?? false, // Ensure completed property is defined
     }));
     console.log("Tasks after loading:", tasks.value);
   }

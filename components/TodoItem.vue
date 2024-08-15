@@ -10,6 +10,7 @@ const emit = defineEmits(["edit-task"]);
 // Local state
 const isEditing = ref(false);
 const editText = ref(props.task.text);
+const isOpen = ref(false);
 
 // Computed property to determine priority class for styling
 const priorityClass = computed(() => {
@@ -45,6 +46,11 @@ const formatDate = (date) => {
   const options = { year: "numeric", month: "long", day: "numeric" };
   return new Date(date).toLocaleDateString(undefined, options);
 };
+
+// Method to toggle details visibility
+const toggleOpen = () => {
+  isOpen.value = !isOpen.value;
+};
 </script>
 
 <template>
@@ -53,36 +59,61 @@ const formatDate = (date) => {
       <!-- Checkbox to toggle task completion -->
       <input
         type="checkbox"
-        v-model="task.completed"
+        :checked="task.completed"
         @change="$emit('toggle-complete', task.id)" />
-      <!-- Task text -->
-      <span :class="{ completed: task.completed }">{{ task.text }}</span>
+      <!-- Task text with toggle functionality -->
+      <span :class="{ completed: task.completed }" class="task-name">
+        {{ task.text }}
+      </span>
+      <Icon @click="toggleOpen" name="ep:arrow-down-bold" class="arrow-icon" />
     </div>
 
-    <!-- Display description -->
-    <div>
-      <span :class="{ completed: task.completed }">{{ task.description }}</span>
-    </div>
+    <!-- Toggleable task details -->
+    <div v-if="isOpen" class="task-details">
+      <!-- Display description -->
+      <div class="todo-description-container">
+        <label>Description:</label>
+        <span class="description-look" :class="todo - description">{{
+          task.description
+        }}</span>
+      </div>
 
-    <!-- Display priority and due date -->
-    <div class="todo-meta">
-      <span class="todo-priority" :class="priorityClass">{{
-        task.priority
-      }}</span>
-      <span class="todo-date">{{ formatDate(task.dueDate) }}</span>
-    </div>
+      <!-- Display priority and due date -->
+      <div class="todo-meta">
+        <label>Priority:</label>
+        <span class="todo-priority" :class="priorityClass">
+          {{ task.priority }}
+        </span>
+        <label>Due Date:</label>
+        <span class="todo-date">{{ formatDate(task.dueDate) }}</span>
+      </div>
 
-    <!-- Action buttons for editing and deleting tasks -->
-    <div class="todo-actions">
-      <button @click="startEditing">Edit</button>
-      <button @click="$emit('delete-task')">Delete</button>
-    </div>
+      <!-- Action buttons for editing and deleting tasks -->
+      <div class="todo-actions">
+        <Icon
+          @click="startEditing"
+          class="editButton"
+          name="material-symbols:edit-rounded" />
+        <Icon
+          @click="$emit('delete-task')"
+          class="deleteButton"
+          name="ep:delete-filled" />
+      </div>
 
-    <!-- Inline editing form -->
-    <div v-if="isEditing" class="edit-form">
-      <input v-model="editText" />
-      <button @click="submitEdit">Save</button>
-      <button @click="cancelEdit">Cancel</button>
+      <!-- Inline editing form -->
+      <div v-if="isEditing" class="edit-form">
+        <input v-model="editText" />
+
+        <Icon
+          @click="submitEdit"
+          class="SaveButton"
+          name="ep:circle-check-filled" />
+
+        <Icon
+          @click="cancelEdit"
+          class="cancelButton"
+          name="ep:circle-close-filled" />
+      </div>
     </div>
   </li>
 </template>
@@ -90,8 +121,9 @@ const formatDate = (date) => {
 <style scoped>
 .todo-item {
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: 10px;
   padding: 10px;
   border: 1px solid #ddd;
@@ -100,9 +132,9 @@ const formatDate = (date) => {
 }
 
 .todo-content {
-  flex: 1;
   display: flex;
   align-items: center;
+  width: 100%;
 }
 
 .todo-content input {
@@ -118,11 +150,32 @@ const formatDate = (date) => {
   color: #aaa;
 }
 
-.todo-meta {
-  display: flex;
-  flex-direction: column;
+.task-details {
+  margin-top: 10px;
+  width: 100%;
+}
+
+.todo-description-container {
+  margin-bottom: 10px;
+  display: grid;
   align-items: flex-start;
-  margin-right: 10px;
+}
+
+.description-look {
+  padding-bottom: 5px;
+}
+
+.arrow-icon {
+  cursor: pointer;
+  color: #000;
+}
+
+.todo-meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  align-items: flex-start;
+  margin-top: 5px;
+  padding-bottom: 5px;
 }
 
 .todo-priority {
@@ -146,6 +199,10 @@ const formatDate = (date) => {
   color: #555;
 }
 
+.todo-actions {
+  margin-top: 10px;
+}
+
 .todo-actions button {
   margin-left: 5px;
   padding: 5px 10px;
@@ -154,6 +211,37 @@ const formatDate = (date) => {
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s;
+}
+
+.editButton {
+  padding: 5px 10px;
+  font-size: 14px;
+  cursor: pointer;
+  color: #555;
+}
+
+.deleteButton {
+  margin-left: 5px;
+  padding: 5px 10px;
+  font-size: 14px;
+  cursor: pointer;
+  color: #555;
+}
+
+.SaveButton {
+  margin-left: 5px;
+  padding: 5px 10px;
+  font-size: 14px;
+  cursor: pointer;
+  color: green;
+}
+
+.cancelButton {
+  margin-left: 5px;
+  padding: 5px 10px;
+  font-size: 14px;
+  cursor: pointer;
+  color: #555;
 }
 
 .todo-actions button:hover {

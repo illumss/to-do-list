@@ -69,6 +69,7 @@ const submitTask = () => {
 .todo-input-form {
   display: grid;
   margin-bottom: 20px;
+  flex-direction: space-between;
 }
 
 .todo-input-form label {
