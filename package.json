@@ -17,6 +17,7 @@
   },
   "devDependencies": {
     "@iconify-json/ep": "^1.1.16",
+    "@iconify-json/material-symbols": "^1.1.87",
     "@unocss/nuxt": "^0.62.1",
     "unocss": "^0.62.1"
   }

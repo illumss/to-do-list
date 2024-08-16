@@ -64,6 +64,10 @@ const toggleIcon = computed(() => {
 });
 
 const toggleOpen = () => {
+  if (isOpen.value) {
+    // luk formen Edit og slet ændringer hvis tasken lukkes
+    isEditing.value = false;
+  }
   isOpen.value = !isOpen.value;
 };
 </script>
@@ -295,7 +299,7 @@ const toggleOpen = () => {
   font-weight: bold;
 }
 
-.task-details button:hover {
+button:hover {
   background-color: #ff66b2;
 }
 
