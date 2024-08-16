@@ -10,11 +10,13 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@nuxt/fonts": "^0.7.2",
     "@nuxt/icon": "^1.4.5",
     "nuxt": "^3.12.4",
     "vue": "latest"
   },
   "devDependencies": {
+    "@iconify-json/ep": "^1.1.16",
     "@unocss/nuxt": "^0.62.1",
     "unocss": "^0.62.1"
   }

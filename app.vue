@@ -14,9 +14,10 @@ import TodoList from "./components/TodoList.vue";
   max-width: 600px;
   margin: 50px auto;
   padding: 20px;
-  background-color: #ffffff;
+  background-color: #ffdaec;
   border-radius: 10px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  font-family: "Poppins", sans-serif;
 }
 
 h1 {

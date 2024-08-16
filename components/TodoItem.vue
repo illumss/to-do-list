@@ -14,7 +14,7 @@ const editDueDate = ref(props.task.dueDate);
 const editPriority = ref(props.task.priority);
 const isOpen = ref(false);
 
-// Calculate today's date in YYYY-MM-DD format
+// find date in YYYY-MM-DD format
 const today = new Date().toISOString().split("T")[0];
 
 const priorityClass = computed(() => {
@@ -54,12 +54,11 @@ const cancelEdit = () => {
 };
 
 const formatDate = (date) => {
-  if (!date) return "No due date";
+  if (!date) return "None";
   const options = { year: "numeric", month: "long", day: "numeric" };
   return new Date(date).toLocaleDateString(undefined, options);
 };
 
-// Compute the icon name based on the isOpen state
 const toggleIcon = computed(() => {
   return isOpen.value ? "ep:close-bold" : "ep:arrow-down-bold";
 });
@@ -81,8 +80,6 @@ const toggleOpen = () => {
       </span>
       <div>
         <Icon @click="toggleOpen" :name="toggleIcon" class="arrow-icon" />
-        <!-- Priority indicator is always visible -->
-
         <Icon
           :class="['priority-indicator', priorityClass]"
           @click="toggleOpen"
@@ -92,16 +89,17 @@ const toggleOpen = () => {
 
     <div v-if="isOpen" class="task-details">
       <div class="todo-description-container">
-        <label>Description:</label>
         <span>{{ task.description || "No description" }}</span>
       </div>
-      <div class="todo-due-date-container">
-        <label>Due Date:</label>
-        <span>{{ formatDate(task.dueDate) }}</span>
-      </div>
-      <div class="todo-priority-container" :class="priorityClass">
-        <label>Priority:</label>
-        <span>{{ task.priority }}</span>
+      <div class="details-due-priority">
+        <div class="todo-due-date-container">
+          <label>Due Date: </label>
+          <span>{{ formatDate(task.dueDate) }}</span>
+        </div>
+        <div class="todo-priority-container" :class="priorityClass">
+          <label>Priority: </label>
+          <span>{{ task.priority }}</span>
+        </div>
       </div>
 
       <button @click="startEditing" class="edit-button">Edit</button>
@@ -111,21 +109,33 @@ const toggleOpen = () => {
     </div>
 
     <div v-if="isEditing" class="edit-form">
-      <input v-model="editText" placeholder="Edit task" class="edit-input" />
-      <input
-        v-model="editDescription"
-        placeholder="Edit description"
-        class="edit-input" />
-      <input
-        v-model="editDueDate"
-        :min="today"
-        type="date"
-        class="edit-date-input" />
-      <select v-model="editPriority" class="edit-priority-input">
-        <option value="Low">Low</option>
-        <option value="Medium">Medium</option>
-        <option value="High">High</option>
-      </select>
+      <div class="edit-form-container">
+        <label for="editTask">Edit Task Name</label>
+        <input v-model="editText" placeholder="Edit task" class="edit-input" />
+      </div>
+      <div class="edit-form-container">
+        <label for="editDescription">Edit Description</label>
+        <input
+          v-model="editDescription"
+          placeholder="Edit description"
+          class="edit-input" />
+      </div>
+      <div class="edit-form-container">
+        <label for="editDueDate">Edit Due Date</label>
+        <input
+          v-model="editDueDate"
+          :min="today"
+          type="date"
+          class="edit-date-input" />
+      </div>
+      <div class="edit-form-container">
+        <label for="editPriority">Edit Priority</label>
+        <select v-model="editPriority" class="edit-priority-input">
+          <option value="Low">Low</option>
+          <option value="Medium">Medium</option>
+          <option value="High">High</option>
+        </select>
+      </div>
       <button @click="submitEdit" class="save-button">Save</button>
       <button @click="cancelEdit" class="cancel-button">Cancel</button>
     </div>
@@ -140,9 +150,9 @@ const toggleOpen = () => {
   align-items: flex-start;
   margin-bottom: 10px;
   padding: 10px;
-  border: 1px solid #ddd;
+  border: 1px solid #ffb3d9;
   border-radius: 4px;
-  background-color: #f9f9f9;
+  background-color: #fff;
 }
 
 .todo-content {
@@ -164,15 +174,28 @@ const toggleOpen = () => {
   color: #aaa;
 }
 
+.todo-content input:checked {
+  width: 1.2em;
+  height: 1.2rem;
+  accent-color: #e04794;
+}
+
 .task-details {
   margin-top: 10px;
   width: 100%;
 }
 
+.task-details label {
+  color: #000;
+}
+
 .todo-description-container {
   margin-bottom: 10px;
+  padding-bottom: 10px;
   display: grid;
   align-items: flex-start;
+  border-bottom: 1px solid #ffb3d9;
+  max-width: 100%;
 }
 
 .description-look {
@@ -217,66 +240,98 @@ const toggleOpen = () => {
   margin-top: 10px;
 }
 
+.details-due-priority {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
 .edit-button {
-  padding: 5px 10px;
+  padding: 8px 15px;
+  margin-top: 15px;
   font-size: 14px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s;
+  background-color: #ff99cc;
+  color: #fff;
+  font-weight: bold;
 }
 
 .delete-button {
   margin-left: 5px;
-  padding: 5px 10px;
+  padding: 8px 15px;
   font-size: 14px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s;
   color: red;
+  font-weight: bold;
 }
 
 .save-button {
-  margin-left: 5px;
-  padding: 5px 10px;
+  padding: 8px 15px;
   font-size: 14px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s;
+  background-color: #ff99cc;
+  color: #fff;
+  font-weight: bold;
 }
 
 .cancel-button {
-  margin-left: 5px;
-  padding: 5px 10px;
+  padding: 8px 15px;
+  font-size: 14px;
   font-size: 14px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s;
   color: red;
-}
-
-.todo-actions button:hover {
-  background-color: #e0e0e0;
+  font-weight: bold;
 }
 
 .task-details button:hover {
-  background-color: #e0e0e0;
+  background-color: #ff66b2;
 }
 
 .edit-form {
-  display: flex;
-  align-items: center;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
   margin-top: 10px;
+  width: 100%;
+}
+
+.edit-form-container {
+  display: flex;
+  flex-direction: column;
 }
 
 .edit-form input {
-  flex: 1;
-  padding: 5px;
-  margin-right: 10px;
-  font-size: 14px;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ffb3d9;
+  border-radius: 4px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.edit-form:focus {
+  border-color: #ff66b2;
+}
+
+.edit-priority-input {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ffb3d9;
+  border-radius: 4px;
+  outline: none;
+  transition: border-color 0.3s;
 }
 
 .edit-form button {
@@ -288,8 +343,12 @@ const toggleOpen = () => {
   transition: background-color 0.3s;
 }
 
-.edit-form button:hover {
-  background-color: #e0e0e0;
+.edit-form label {
+  padding-bottom: 5px;
+}
+
+.edit-form input:hover {
+  border-color: #ff66b2;
 }
 
 .priority-indicator {

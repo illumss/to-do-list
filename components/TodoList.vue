@@ -1,8 +1,4 @@
 <script setup>
-import { ref, computed, onMounted } from "vue";
-import TodoItem from "~/components/TodoItem.vue";
-import TodoInput from "~/components/TodoInput.vue";
-
 const tasks = ref([]);
 const sortOrder = ref("created");
 
@@ -138,10 +134,12 @@ onMounted(() => {
 }
 
 .sort-container select {
-  padding: 5px;
+  padding: 10px;
   font-size: 16px;
+  border: 1px solid #ffb3d9;
   border-radius: 4px;
-  border: 1px solid #ccc;
+  outline: none;
+  transition: border-color 0.3s;
 }
 
 h2 {

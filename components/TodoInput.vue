@@ -40,7 +40,7 @@ const submitTask = () => {
       <input
         v-model="newTask"
         id="newTask"
-        placeholder="Add a new task"
+        placeholder="Add a new task..."
         class="todo-input" />
     </div>
 
@@ -49,7 +49,7 @@ const submitTask = () => {
       <input
         v-model="taskDescription"
         id="taskDescription"
-        placeholder="Add a description"
+        placeholder="Add a description..."
         class="todo-description-input" />
     </div>
 
@@ -65,7 +65,20 @@ const submitTask = () => {
       </div>
 
       <div class="form-group">
-        <label for="priority">Priority</label>
+        <div class="hover-state">
+          <label for="priority">Priority *</label>
+          <div class="hover-state-content">
+            <p>
+              Priority colors will be indicated as such, and refers to the
+              importance of the task
+            </p>
+            <div class="hover-priority-details">
+              <p class="low">Low</p>
+              <p class="medium">Medium</p>
+              <p class="high">High</p>
+            </div>
+          </div>
+        </div>
         <select v-model="priority" id="priority" class="todo-priority">
           <option value="Low">Low</option>
           <option value="Medium">Medium</option>
@@ -103,7 +116,7 @@ const submitTask = () => {
 .todo-priority {
   padding: 10px;
   font-size: 16px;
-  border: 1px solid #ccc;
+  border: 1px solid #ffb3d9;
   border-radius: 4px;
   outline: none;
   transition: border-color 0.3s;
@@ -113,21 +126,66 @@ const submitTask = () => {
 .todo-description-input:focus,
 .todo-date:focus,
 .todo-priority:focus {
-  border-color: #007bff;
+  border-color: #ff66b2;
 }
 
 .add-task-button {
   padding: 10px 20px;
   font-size: 16px;
   color: #fff;
-  background-color: #007bff;
+  background-color: #ff99cc;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  font-weight: bold;
   transition: background-color 0.3s;
 }
 
 .add-task-button:hover {
-  background-color: #0056b3;
+  background-color: #ff66b2;
+}
+
+.hover-state {
+  position: relative;
+  display: inline-block;
+}
+
+.hover-state-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 13px;
+  z-index: 1;
+}
+
+.hover-priority-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  flex-direction: space-between;
+  gap: 5px;
+}
+
+.hover-priority-details p {
+  border-radius: 4px;
+  text-align: center;
+}
+
+.low {
+  background-color: #4dff4d;
+}
+
+.medium {
+  background-color: #ffcc00;
+}
+
+.high {
+  background-color: #ff6666;
+}
+
+.hover-state:hover .hover-state-content {
+  display: block;
 }
 </style>
