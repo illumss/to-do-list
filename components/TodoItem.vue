@@ -31,9 +31,10 @@
           <span>{{ task.priority }}</span>
         </div>
       </div>
-
+      <div class="edit-delete-buttons-container">
       <button @click="startEditing" class="save-edit-button">Edit</button>
       <button @click="confirmDelete" class="delete-button">Delete</button>
+    </div>
     </div>
 
     <div v-if="isEditing" class="edit-form">
@@ -48,6 +49,7 @@
           placeholder="Edit description"
           class="edit-input" />
       </div>
+      <div class="due-pri-container">
       <div class="edit-form-container">
         <label for="editDueDate">Edit Due Date</label>
         <input
@@ -272,6 +274,14 @@ const cancelDelete = () => {
   margin-bottom: 10px;
 }
 
+.edit-delete-buttons-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
 .save-edit-button {
   padding: 8px 15px;
   font-size: 14px;
@@ -307,7 +317,7 @@ const cancelDelete = () => {
 
 .edit-form {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 10px;
   margin-top: 10px;
   width: 100%;
@@ -316,6 +326,13 @@ const cancelDelete = () => {
 .edit-form-container {
   display: flex;
   flex-direction: column;
+  gap: 5px;
+}
+
+.due-pri-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
 }
 
 .edit-form input {
