@@ -1,5 +1,8 @@
 <template>
+  <!--  tilføj en ny opgave formen -->
+
   <form @submit.prevent="submitTask" class="todo-input-form">
+    <!--  opgavenavn -->
     <div class="form-group">
       <label for="newTask">Task Name</label>
       <div class="input-wrapper">
@@ -8,13 +11,18 @@
           id="newTask"
           placeholder="Add a new task..."
           class="todo-input" />
+
+        <!-- karaktertæller -->
         <span class="char-counter">{{ newTask.length }}/50</span>
       </div>
+
+      <!-- fejlbesked hvis opgavenavn er tom eller for lang -->
       <span v-if="taskNameError" class="error-message">{{
         taskNameError
       }}</span>
     </div>
 
+    <!--  opgavebeskrivelse -->
     <div class="form-group">
       <label for="taskDescription">Task Description</label>
       <input
@@ -25,6 +33,7 @@
     </div>
 
     <div class="task-details">
+      <!--  due date -->
       <div class="form-group">
         <label for="dueDate">Due Date</label>
         <input
@@ -35,9 +44,12 @@
           class="todo-date" />
       </div>
 
+      <!--  prioritet -->
       <div class="form-group">
         <div class="hover-state">
           <label for="priority">Priority *</label>
+
+          <!-- hover state på priority * forklarer farvebrugen -->
           <div class="hover-state-content">
             <p>
               Priority colors will be indicated as such, and refers to the
@@ -50,6 +62,7 @@
             </div>
           </div>
         </div>
+        <!--  prioritet dropdown -->
         <select v-model="priority" id="priority" class="todo-priority">
           <option value="Low">Low</option>
           <option value="Medium">Medium</option>
@@ -58,6 +71,7 @@
       </div>
     </div>
 
+    <!--  tilføj opgave knap -->
     <button type="submit" class="add-task-button">Add Task</button>
   </form>
 </template>
@@ -76,6 +90,7 @@ const today = new Date().toISOString().split("T")[0];
 
 const submitted = ref(false);
 
+// error logik hvis opgavenavn er tom eller for lang
 const taskNameError = computed(() => {
   if (!submitted.value) return "";
   if (newTask.value.trim() === "") {
@@ -87,10 +102,12 @@ const taskNameError = computed(() => {
   return "";
 });
 
+// capitalize første bogstav i en string
 const capitalizeFirstLetter = (string) => {
   return string.charAt(0).toUpperCase() + string.slice(1);
 };
 
+// trykker på tilføj opgave knap
 const submitTask = () => {
   submitted.value = true;
   if (newTask.value.trim() !== "" && !taskNameError.value) {
@@ -101,12 +118,12 @@ const submitTask = () => {
       priority: priority.value,
       completed: false,
     });
-    // Reset form fields
+
     newTask.value = "";
     taskDescription.value = "";
     dueDate.value = "";
     priority.value = "Low";
-    submitted.value = false; // Reset submitted status
+    submitted.value = false; //  nulstiller submitted
   }
 };
 </script>

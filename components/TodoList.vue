@@ -1,7 +1,10 @@
 <template>
+  <!--  yderste lag af to do listen -->
+
   <div>
     <TodoInput @add-task="addTask" />
 
+    <!--  sorterings-knap -->
     <div class="sort-container">
       <label for="sort">Sort by:</label>
       <select id="sort" v-model="sortOrder" @change="sortTasks">
@@ -12,6 +15,7 @@
       </select>
     </div>
 
+    <!--  liste over aktive opgaver -->
     <h2>Active Tasks</h2>
     <ul v-if="sortedActiveTasks.length">
       <TodoItem
@@ -22,8 +26,10 @@
         @edit-task="editTask(task.id, $event)"
         @toggle-complete="toggleComplete(task.id)" />
     </ul>
+    <!-- hvis der ikke er nogen aktive opgaver -->
     <p v-else>No active tasks</p>
 
+    <!--  liste over færdige opgaver -->
     <h2>Completed Tasks</h2>
     <ul v-if="completedTasks.length">
       <TodoItem
@@ -34,52 +40,55 @@
         @edit-task="editTask(task.id, $event)"
         @toggle-complete="toggleComplete(task.id)" />
     </ul>
+    <!-- hvis der ikke er nogen færdige opgaver -->
     <p v-else>No completed tasks</p>
   </div>
 </template>
 
 <script setup>
 const tasks = ref([]);
-const sortOrder = ref("created");
+const sortOrder = ref("created"); //  sorteringsrækkefølge
 
-const activeTasks = computed(() =>
-  tasks.value.filter((task) => !task.completed)
+const activeTasks = computed(
+  () => tasks.value.filter((task) => !task.completed) //  aktive opgaver
 );
-const completedTasks = computed(() =>
-  tasks.value.filter((task) => task.completed)
+const completedTasks = computed(
+  () => tasks.value.filter((task) => task.completed) //  færdige opgaver
 );
 
+//  sorteringsfunktion til at sortere opgaverne
 const sortedActiveTasks = computed(() => {
   switch (sortOrder.value) {
     case "dueDate":
       return [...activeTasks.value].sort(
-        (a, b) => new Date(a.dueDate) - new Date(b.dueDate)
+        (a, b) => new Date(a.dueDate) - new Date(b.dueDate) //  sorterer efter due date
       );
     case "priority":
       const priorityMap = { High: 1, Medium: 2, Low: 3 };
       return [...activeTasks.value].sort(
-        (a, b) => priorityMap[a.priority] - priorityMap[b.priority]
+        (a, b) => priorityMap[a.priority] - priorityMap[b.priority] //  sorterer efter prioritet
       );
     case "alphabetical":
-      return [...activeTasks.value].sort((a, b) =>
-        a.text.localeCompare(b.text)
+      return [...activeTasks.value].sort(
+        (a, b) => a.text.localeCompare(b.text) //  sorterer alfabetisk
       );
     case "created":
     default:
-      return activeTasks.value;
+      return activeTasks.value; //  sorterer efter oprettelsesdato
   }
 });
 
 const addTask = (task) => {
   tasks.value.push({ id: Date.now(), ...task });
-  saveTasks();
+  saveTasks(); //  gemmer opgaverne i local storage
 };
 
 const deleteTask = (taskId) => {
   tasks.value = tasks.value.filter((task) => task.id !== taskId);
-  saveTasks();
+  saveTasks(); //  sletter opgaverne i local storage
 };
 
+// redigerer opgaverne
 const editTask = (taskId, newTask) => {
   const task = tasks.value.find((task) => task.id === taskId);
   if (task) {
@@ -95,7 +104,7 @@ const toggleComplete = (taskId) => {
   const task = tasks.value.find((task) => task.id === taskId);
   if (task) {
     task.completed = !task.completed;
-    saveTasks();
+    saveTasks(); //  gemmer færdige opgaver i local storage
   }
 };
 
@@ -107,6 +116,7 @@ const saveTasks = () => {
   localStorage.setItem("tasks", JSON.stringify(tasks.value));
 };
 
+//  henter opgaverne fra local storage
 const loadTasks = () => {
   const savedTasks = JSON.parse(localStorage.getItem("tasks"));
   if (savedTasks) {

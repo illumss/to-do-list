@@ -1,5 +1,8 @@
 <template>
+  <!-- hver enkel opgave -->
+
   <li class="todo-item">
+    <!--  viser kun checkbox, opgave navn, toggle knap og prioritetsfarven -->
     <div class="todo-content">
       <input
         type="checkbox"
@@ -8,6 +11,7 @@
       <span :class="{ completed: task.completed }" class="task-name">
         {{ task.text }}
       </span>
+
       <div>
         <Icon @click="toggleOpen" :name="toggleIcon" class="arrow-icon" />
         <Icon
@@ -17,6 +21,7 @@
       </div>
     </div>
 
+    <!--  åbnes opgaven, vises opgavebeskrivelse, due date, prioritet og rediger/slet knapper -->
     <div v-if="isOpen" class="task-details">
       <div class="todo-description-container">
         <span>{{ task.description || "No description" }}</span>
@@ -37,6 +42,7 @@
       </div>
     </div>
 
+    <!--  rediger opgave form -->
     <div v-if="isEditing" class="edit-form">
       <div class="edit-form-container">
         <label for="editTask">Edit Task Name</label>
@@ -110,6 +116,7 @@ const priorityClass = computed(() => {
   };
 });
 
+// start redigering af opgave
 const startEditing = () => {
   isEditing.value = true;
   editText.value = props.task.text;
@@ -118,10 +125,12 @@ const startEditing = () => {
   editPriority.value = props.task.priority;
 };
 
+// capitalize første bogstav i en string
 const capitalizeFirstLetter = (string) => {
   return string.charAt(0).toUpperCase() + string.slice(1);
 };
 
+// gem redigeret opgave
 const submitEdit = () => {
   if (editText.value.trim() !== "") {
     emit("edit-task", {
@@ -134,23 +143,26 @@ const submitEdit = () => {
   }
 };
 
+// annuller redigering af opgave
 const cancelEdit = () => {
   isEditing.value = false;
 };
 
+// formatere dato
 const formatDate = (date) => {
   if (!date) return "None";
   const options = { year: "numeric", month: "long", day: "numeric" };
   return new Date(date).toLocaleDateString(undefined, options);
 };
 
+// toggle åben/luk opgave
 const toggleIcon = computed(() => {
   return isOpen.value ? "ep:close-bold" : "ep:arrow-down-bold";
 });
 
 const toggleOpen = () => {
   if (isOpen.value) {
-    // luk formen Edit og slet ændringer hvis opgaven lukkes
+    // luk formen Edit og slet ændringer hvis opgaven lukkes før der gemmes
     isEditing.value = false;
   }
   isOpen.value = !isOpen.value;
