@@ -1,47 +1,18 @@
-<script setup>
-import { ref } from "vue";
-
-const emit = defineEmits(["add-task"]);
-
-const newTask = ref("");
-const taskDescription = ref("");
-const dueDate = ref("");
-const priority = ref("Low");
-
-// Calculate today's date in YYYY-MM-DD format
-const today = new Date().toISOString().split("T")[0];
-
-const capitalizeFirstLetter = (string) => {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-};
-
-const submitTask = () => {
-  if (newTask.value.trim() !== "") {
-    emit("add-task", {
-      text: capitalizeFirstLetter(newTask.value.trim()),
-      description: capitalizeFirstLetter(taskDescription.value.trim()),
-      dueDate: dueDate.value,
-      priority: priority.value,
-      completed: false,
-    });
-    // Reset form fields
-    newTask.value = "";
-    taskDescription.value = "";
-    dueDate.value = "";
-    priority.value = "Low";
-  }
-};
-</script>
-
 <template>
   <form @submit.prevent="submitTask" class="todo-input-form">
     <div class="form-group">
       <label for="newTask">Task Name</label>
-      <input
-        v-model="newTask"
-        id="newTask"
-        placeholder="Add a new task..."
-        class="todo-input" />
+      <div class="input-wrapper">
+        <input
+          v-model="newTask"
+          id="newTask"
+          placeholder="Add a new task..."
+          class="todo-input" />
+        <span class="char-counter">{{ newTask.length }}/50</span>
+      </div>
+      <span v-if="taskNameError" class="error-message">{{
+        taskNameError
+      }}</span>
     </div>
 
     <div class="form-group">
@@ -91,6 +62,55 @@ const submitTask = () => {
   </form>
 </template>
 
+<script setup>
+import { ref, computed } from "vue";
+
+const emit = defineEmits(["add-task"]);
+
+const newTask = ref("");
+const taskDescription = ref("");
+const dueDate = ref("");
+const priority = ref("Low");
+
+const today = new Date().toISOString().split("T")[0];
+
+const submitted = ref(false);
+
+const taskNameError = computed(() => {
+  if (!submitted.value) return "";
+  if (newTask.value.trim() === "") {
+    return "Task name cant be empty.";
+  }
+  if (newTask.value.length > 50) {
+    return "Task name cant exceed 50 characters.";
+  }
+  return "";
+});
+
+const capitalizeFirstLetter = (string) => {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+};
+
+const submitTask = () => {
+  submitted.value = true;
+  if (newTask.value.trim() !== "" && !taskNameError.value) {
+    emit("add-task", {
+      text: capitalizeFirstLetter(newTask.value.trim()),
+      description: capitalizeFirstLetter(taskDescription.value.trim()),
+      dueDate: dueDate.value,
+      priority: priority.value,
+      completed: false,
+    });
+    // Reset form fields
+    newTask.value = "";
+    taskDescription.value = "";
+    dueDate.value = "";
+    priority.value = "Low";
+    submitted.value = false; // Reset submitted status
+  }
+};
+</script>
+
 <style scoped>
 .todo-input-form {
   display: grid;
@@ -120,6 +140,8 @@ const submitTask = () => {
   border-radius: 4px;
   outline: none;
   transition: border-color 0.3s;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .todo-input:focus,
@@ -127,6 +149,14 @@ const submitTask = () => {
 .todo-date:focus,
 .todo-priority:focus {
   border-color: #ff66b2;
+}
+
+.char-counter {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  font-size: 14px;
+  color: #666;
 }
 
 .add-task-button {
@@ -143,6 +173,20 @@ const submitTask = () => {
 
 .add-task-button:hover {
   background-color: #ff66b2;
+}
+
+.add-task-button:disabled {
+  background-color: #ffd6e2;
+  cursor: not-allowed;
+}
+
+.input-wrapper {
+  position: relative;
+}
+
+.error-message {
+  color: red;
+  font-size: 14px;
 }
 
 .hover-state {

@@ -1,3 +1,43 @@
+<template>
+  <div>
+    <TodoInput @add-task="addTask" />
+
+    <div class="sort-container">
+      <label for="sort">Sort by:</label>
+      <select id="sort" v-model="sortOrder" @change="sortTasks">
+        <option value="dueDate">Due Date</option>
+        <option value="priority">Priority</option>
+        <option value="alphabetical">Alphabetical</option>
+        <option value="created">Creation Date</option>
+      </select>
+    </div>
+
+    <h2>Active Tasks</h2>
+    <ul v-if="sortedActiveTasks.length">
+      <TodoItem
+        v-for="task in sortedActiveTasks"
+        :key="task.id"
+        :task="task"
+        @delete-task="deleteTask(task.id)"
+        @edit-task="editTask(task.id, $event)"
+        @toggle-complete="toggleComplete(task.id)" />
+    </ul>
+    <p v-else>No active tasks</p>
+
+    <h2>Completed Tasks</h2>
+    <ul v-if="completedTasks.length">
+      <TodoItem
+        v-for="task in completedTasks"
+        :key="task.id"
+        :task="task"
+        @delete-task="deleteTask(task.id)"
+        @edit-task="editTask(task.id, $event)"
+        @toggle-complete="toggleComplete(task.id)" />
+    </ul>
+    <p v-else>No completed tasks</p>
+  </div>
+</template>
+
 <script setup>
 const tasks = ref([]);
 const sortOrder = ref("created");
@@ -81,46 +121,6 @@ onMounted(() => {
   loadTasks();
 });
 </script>
-
-<template>
-  <div>
-    <TodoInput @add-task="addTask" />
-
-    <div class="sort-container">
-      <label for="sort">Sort by:</label>
-      <select id="sort" v-model="sortOrder" @change="sortTasks">
-        <option value="dueDate">Due Date</option>
-        <option value="priority">Priority</option>
-        <option value="alphabetical">Alphabetical</option>
-        <option value="created">Creation Date</option>
-      </select>
-    </div>
-
-    <h2>Active Tasks</h2>
-    <ul v-if="sortedActiveTasks.length">
-      <TodoItem
-        v-for="task in sortedActiveTasks"
-        :key="task.id"
-        :task="task"
-        @delete-task="deleteTask(task.id)"
-        @edit-task="editTask(task.id, $event)"
-        @toggle-complete="toggleComplete(task.id)" />
-    </ul>
-    <p v-else>No active tasks</p>
-
-    <h2>Completed Tasks</h2>
-    <ul v-if="completedTasks.length">
-      <TodoItem
-        v-for="task in completedTasks"
-        :key="task.id"
-        :task="task"
-        @delete-task="deleteTask(task.id)"
-        @edit-task="editTask(task.id, $event)"
-        @toggle-complete="toggleComplete(task.id)" />
-    </ul>
-    <p v-else>No completed tasks</p>
-  </div>
-</template>
 
 <style scoped>
 .sort-container {
