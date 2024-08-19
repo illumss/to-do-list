@@ -32,9 +32,9 @@
         </div>
       </div>
       <div class="edit-delete-buttons-container">
-      <button @click="startEditing" class="save-edit-button">Edit</button>
-      <button @click="confirmDelete" class="delete-button">Delete</button>
-    </div>
+        <button @click="startEditing" class="save-edit-button">Edit</button>
+        <button @click="confirmDelete" class="delete-button">Delete</button>
+      </div>
     </div>
 
     <div v-if="isEditing" class="edit-form">
@@ -50,24 +50,25 @@
           class="edit-input" />
       </div>
       <div class="due-pri-container">
-      <div class="edit-form-container">
-        <label for="editDueDate">Edit Due Date</label>
-        <input
-          v-model="editDueDate"
-          :min="today"
-          type="date"
-          class="edit-date-input" />
+        <div class="edit-form-container">
+          <label for="editDueDate">Edit Due Date</label>
+          <input
+            v-model="editDueDate"
+            :min="today"
+            type="date"
+            class="edit-date-input" />
+        </div>
+        <div class="edit-form-container">
+          <label for="editPriority">Edit Priority</label>
+          <select v-model="editPriority" class="edit-priority-input">
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+          </select>
+        </div>
+        <button @click="submitEdit" class="save-edit-button">Save</button>
+        <button @click="cancelEdit" class="no-button">Cancel</button>
       </div>
-      <div class="edit-form-container">
-        <label for="editPriority">Edit Priority</label>
-        <select v-model="editPriority" class="edit-priority-input">
-          <option value="Low">Low</option>
-          <option value="Medium">Medium</option>
-          <option value="High">High</option>
-        </select>
-      </div>
-      <button @click="submitEdit" class="save-edit-button">Save</button>
-      <button @click="cancelEdit" class="no-button">Cancel</button>
     </div>
 
     <!-- er du sikker på du vil slette opgaven modal -->
