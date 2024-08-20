@@ -12,6 +12,7 @@
   "dependencies": {
     "@nuxt/fonts": "^0.7.2",
     "@nuxt/icon": "^1.4.5",
+    "@unocss/reset": "^0.62.2",
     "nuxt": "^3.12.4",
     "vue": "latest"
   },

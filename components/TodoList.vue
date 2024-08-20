@@ -1,49 +1,4 @@
-<template>
-  <!--  yderste lag af to do listen -->
-
-  <div>
-    <TodoInput @add-task="addTask" />
-
-    <!--  sorterings-knap -->
-    <div class="sort-container">
-      <label for="sort">Sort by:</label>
-      <select id="sort" v-model="sortOrder" @change="sortTasks">
-        <option value="dueDate">Due Date</option>
-        <option value="priority">Priority</option>
-        <option value="alphabetical">Alphabetical</option>
-        <option value="created">Creation Date</option>
-      </select>
-    </div>
-
-    <!--  liste over aktive opgaver -->
-    <h2>Active Tasks</h2>
-    <ul v-if="sortedActiveTasks.length">
-      <TodoItem
-        v-for="task in sortedActiveTasks"
-        :key="task.id"
-        :task="task"
-        @delete-task="deleteTask(task.id)"
-        @edit-task="editTask(task.id, $event)"
-        @toggle-complete="toggleComplete(task.id)" />
-    </ul>
-    <!-- hvis der ikke er nogen aktive opgaver -->
-    <p v-else>No active tasks</p>
-
-    <!--  liste over færdige opgaver -->
-    <h2>Completed Tasks</h2>
-    <ul v-if="completedTasks.length">
-      <TodoItem
-        v-for="task in completedTasks"
-        :key="task.id"
-        :task="task"
-        @delete-task="deleteTask(task.id)"
-        @edit-task="editTask(task.id, $event)"
-        @toggle-complete="toggleComplete(task.id)" />
-    </ul>
-    <!-- hvis der ikke er nogen færdige opgaver -->
-    <p v-else>No completed tasks</p>
-  </div>
-</template>
+<!--  yderste lag af to do listen -->
 
 <script setup>
 const tasks = ref([]);
@@ -132,39 +87,69 @@ onMounted(() => {
 });
 </script>
 
-<style scoped>
-.sort-container {
-  margin-bottom: 10px;
-  display: flex;
-  align-items: center;
-}
+<template>
+  <div>
+    <TodoInput @add-task="addTask" />
 
-.sort-container label {
-  margin-right: 10px;
-}
+    <!--  sorterings-knap -->
+    <div class="mb-2.5 flex items-center">
+      <label for="sort" class="mr-2.5">Sort by:</label>
+      <select
+        id="sort"
+        v-model="sortOrder"
+        @change="sortTasks"
+        class="p-2.5 text-base outline-none border rounded border-#ffb3d9 transition duration-300 focus:border-#ff66b2">
+        <option value="dueDate">Due Date</option>
+        <option value="priority">Priority</option>
+        <option value="alphabetical">Alphabetical</option>
+        <option value="created">Creation Date</option>
+      </select>
+    </div>
 
-.sort-container select {
-  padding: 10px;
-  font-size: 16px;
-  border: 1px solid #ffb3d9;
-  border-radius: 4px;
-  outline: none;
-  transition: border-color 0.3s;
-}
+    <!--  liste over aktive opgaver -->
+    <h2 class="mt-5 text-2xl text-gray-900">Active Tasks</h2>
 
-h2 {
-  margin-top: 20px;
-  font-size: 1.5em;
-  color: #333;
-}
+    <template v-if="sortedActiveTasks.length">
+      <TransitionGroup name="list" tag="ul" class="list-none p-0">
+        <TodoItem
+          v-for="task in sortedActiveTasks"
+          :key="task.id"
+          :task="task"
+          @delete-task="deleteTask(task.id)"
+          @edit-task="editTask(task.id, $event)"
+          @toggle-complete="toggleComplete(task.id)"
+      /></TransitionGroup>
+    </template>
+    <!-- hvis der ikke er nogen aktive opgaver -->
+    <p v-else class="italic color-#777">No active tasks</p>
 
-ul {
-  list-style-type: none;
-  padding: 0;
-}
+    <!--  liste over færdige opgaver -->
+    <h2 class="mt-5 text-2xl text-gray-900">Completed Tasks</h2>
+    <template v-if="completedTasks.length">
+      <TransitionGroup name="list" tag="ul" class="list-none p-0">
+        <TodoItem
+          v-for="task in completedTasks"
+          :key="task.id"
+          :task="task"
+          @delete-task="deleteTask(task.id)"
+          @edit-task="editTask(task.id, $event)"
+          @toggle-complete="toggleComplete(task.id)" />
+      </TransitionGroup>
+    </template>
+    <!-- hvis der ikke er nogen færdige opgaver -->
+    <p v-else class="italic color-#777">No completed tasks</p>
+  </div>
+</template>
 
-p {
-  font-style: italic;
-  color: #777;
+<style>
+.list-move,
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.5s ease;
+}
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
 }
 </style>

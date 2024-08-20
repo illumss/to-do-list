@@ -1,6 +1,58 @@
-<template>
-  <!--  tilføj en ny opgave formen -->
+<!--  tilføj en ny opgave formen -->
 
+<script setup>
+import { ref, computed } from "vue";
+
+const emit = defineEmits(["add-task"]);
+
+const newTask = ref("");
+const taskDescription = ref("");
+const dueDate = ref("");
+const priority = ref("Low");
+
+const today = new Date().toISOString().split("T")[0];
+
+const submitted = ref(false);
+
+// error logik hvis opgavenavn er tom eller for lang
+const taskNameError = computed(() => {
+  if (!submitted.value) return "";
+  if (newTask.value.trim() === "") {
+    return "Task name cant be empty.";
+  }
+  if (newTask.value.length > 50) {
+    return "Task name cant exceed 50 characters.";
+  }
+  return "";
+});
+
+// capitalize første bogstav i en string
+const capitalizeFirstLetter = (string) => {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+};
+
+// trykker på tilføj opgave knap
+const submitTask = () => {
+  submitted.value = true;
+  if (newTask.value.trim() !== "" && !taskNameError.value) {
+    emit("add-task", {
+      text: capitalizeFirstLetter(newTask.value.trim()),
+      description: capitalizeFirstLetter(taskDescription.value.trim()),
+      dueDate: dueDate.value,
+      priority: priority.value,
+      completed: false,
+    });
+
+    newTask.value = "";
+    taskDescription.value = "";
+    dueDate.value = "";
+    priority.value = "Low";
+    submitted.value = false; //  nulstiller submitted
+  }
+};
+</script>
+
+<template>
   <form @submit.prevent="submitTask" class="todo-input-form">
     <!--  opgavenavn -->
     <div class="form-group">
@@ -17,7 +69,7 @@
       </div>
 
       <!-- fejlbesked hvis opgavenavn er tom eller for lang -->
-      <span v-if="taskNameError" class="error-message">{{
+      <span v-if="taskNameError" class="color-#ff0000">{{
         taskNameError
       }}</span>
     </div>
@@ -75,58 +127,6 @@
     <button type="submit" class="add-task-button">Add Task</button>
   </form>
 </template>
-
-<script setup>
-import { ref, computed } from "vue";
-
-const emit = defineEmits(["add-task"]);
-
-const newTask = ref("");
-const taskDescription = ref("");
-const dueDate = ref("");
-const priority = ref("Low");
-
-const today = new Date().toISOString().split("T")[0];
-
-const submitted = ref(false);
-
-// error logik hvis opgavenavn er tom eller for lang
-const taskNameError = computed(() => {
-  if (!submitted.value) return "";
-  if (newTask.value.trim() === "") {
-    return "Task name cant be empty.";
-  }
-  if (newTask.value.length > 50) {
-    return "Task name cant exceed 50 characters.";
-  }
-  return "";
-});
-
-// capitalize første bogstav i en string
-const capitalizeFirstLetter = (string) => {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-};
-
-// trykker på tilføj opgave knap
-const submitTask = () => {
-  submitted.value = true;
-  if (newTask.value.trim() !== "" && !taskNameError.value) {
-    emit("add-task", {
-      text: capitalizeFirstLetter(newTask.value.trim()),
-      description: capitalizeFirstLetter(taskDescription.value.trim()),
-      dueDate: dueDate.value,
-      priority: priority.value,
-      completed: false,
-    });
-
-    newTask.value = "";
-    taskDescription.value = "";
-    dueDate.value = "";
-    priority.value = "Low";
-    submitted.value = false; //  nulstiller submitted
-  }
-};
-</script>
 
 <style scoped>
 .todo-input-form {
@@ -199,11 +199,6 @@ const submitTask = () => {
 
 .input-wrapper {
   position: relative;
-}
-
-.error-message {
-  color: red;
-  font-size: 14px;
 }
 
 .hover-state {
